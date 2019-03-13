@@ -8,7 +8,7 @@ class HttpClient{
         this.cookie=[];
     }
 
-    UpdateCookie(_cookie){
+    updateCookie(_cookie){
         var c = this.cookie.find(item => item["key"]==_cookie["key"]);
         if(!c){
             this.cookie.push(_cookie);
@@ -21,7 +21,7 @@ class HttpClient{
     /**
      * 从this.cookie获得所有cookie添加到headers中
      */
-    SetCookieToHeaders(){
+    setCookieToHeaders(){
         //写入cookie到headers
         var cookieStr=cookieHelper.dataCookieToString(this.cookie);
         if(cookieStr.length>0){
@@ -33,56 +33,54 @@ class HttpClient{
      * 从response获得所有的cookie值写入this.cookie
      * @param {} cookieStrs 
      */
-    GetCookieFromResponse(cookieStrs){
+    getCookieFromResponse(cookieStrs){
         if(!cookieStrs){
             return;
         }
         cookieStrs.forEach(element => {
             var cookies=cookieHelper.mkdataCookie(element);
             cookies.forEach(el2=>{
-                this.UpdateCookie(el2);
+                this.updateCookie(el2);
             });
         });
     }
 
-    async Get(_url){
-        var client=this;
-        client.SetCookieToHeaders();
-        return new Promise(function(resolve,reject){
-            client.request({
+    async get(_url){
+        this.setCookieToHeaders();
+        return new Promise((resolve,reject)=>{
+            this.request({
                 url:    _url,   // 请求的URL
-                method: 'GET',                   // 请求方法
-                headers: client.headers
-              }, function (error, response, body) {
+                method: 'get',                   // 请求方法
+                headers: this.headers
+              }, (error, response, body)=>  {
                 if (!error) {
-                    client.GetCookieFromResponse(response.headers['set-cookie']);
+                    this.getCookieFromResponse(response.headers['set-cookie']);
                     resolve(response);
                 }
                 else{
                     reject(error);
                 }
               });
-        })
+        });
     }
-    async Post(_url,_param){
-        var client=this;
-        client.SetCookieToHeaders();
-        return new Promise(function(resolve,reject){
-            client.request({
+    async post(_url,_param){
+        this.setCookieToHeaders();
+        return new Promise((resolve,reject)=>{
+            this.request({
                 url:    _url,   // 请求的URL
-                method: 'POST',
+                method: 'post',
                 body:_param,                // 请求方法
-                headers: client.headers
-              }, function (error, response, body) {
+                headers: this.headers
+              }, (error, response, body)=>  {
                 if (!error) {
-                    client.GetCookieFromResponse();
+                    getCookieFromResponse();
                     resolve(response);
                 }
                 else{
                     reject(error);
                 }
               });
-        })
+        });
     }
 }
 module.exports=HttpClient;

@@ -86,7 +86,7 @@ async function main(){
                     "10",
                     t,t,t
                 );
-                var r=await httpClient.Get(url+param);
+                var r=await httpClient.get(url+param);
                 if(r.statusCode==200){
                     if(analysisData(r.body,skip)){
                         skip+=50;
